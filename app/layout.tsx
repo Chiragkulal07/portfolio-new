@@ -18,7 +18,8 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-const baseUrl = "https://chirag.dev";
+const baseUrl =
+  "https://portfolio-rkriq60pd-chiragkulal07s-projects.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
