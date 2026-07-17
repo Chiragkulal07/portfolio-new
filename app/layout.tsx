@@ -18,8 +18,7 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
 });
 
-const baseUrl =
-  "https://portfolio-new-rho-dun.vercel.app/";
+const baseUrl = "https://portfolio-new-rho-dun.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
