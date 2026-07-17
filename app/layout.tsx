@@ -19,7 +19,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 const baseUrl =
-  "https://portfolio-rkriq60pd-chiragkulal07s-projects.vercel.app";
+  "https://portfolio-new-rho-dun.vercel.app/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
