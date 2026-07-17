@@ -30,7 +30,7 @@ export interface SkillGroup {
   items: string[];
 }
 
-export interface ExperienceItem {
+export interface StudyItem {
   role: string;
   company: string;
   duration: string;
@@ -67,36 +67,36 @@ export const socialLinks: SocialLink[] = [
 
 export const projects: Project[] = [
   {
-    id: "aurora-dashboard",
-    title: "Aurora Dashboard",
+    id: "codeconnect",
+    title: "CodeConnect",
     description:
-      "A data-rich analytics experience for a SaaS platform with a focus on clarity and usability.",
-    tags: ["Next.js", "TypeScript", "Design Systems"],
-    imageUrl: "/images/aurora-dashboard.jpg",
-    liveUrl: "https://example.com/aurora-dashboard",
-    githubUrl: "https://github.com/chirag/aurora-dashboard",
+      "A real-time collaborative code editor that lets multiple developers write, edit, and debug code together instantly using Socket.io.",
+    tags: ["Socket.io", "Node.js", "React", "Real-time Collaboration"],
+    imageUrl: "/images/codeconnect.jpg",
+    liveUrl: "",
+    githubUrl: "https://github.com/Karthikshettyhub/codeconnnect.git",
     featured: true,
   },
   {
-    id: "studio-archive",
-    title: "Studio Archive",
+    id: "mock-project-1",
+    title: "Nexus Dashboard (Mock)",
     description:
-      "A storytelling-focused portfolio platform for a creative studio with immersive interactions.",
-    tags: ["React", "Framer Motion", "Content Design"],
-    imageUrl: "/images/studio-archive.jpg",
-    liveUrl: "https://example.com/studio-archive",
-    githubUrl: "https://github.com/chirag/studio-archive",
-    featured: true,
+      "A mock analytics dashboard added temporarily to test the scroll-linked sticky card stacking effect. It features data visualization and customizable widgets.",
+    tags: ["Next.js", "Tailwind", "Framer Motion", "Recharts"],
+    imageUrl: "/images/codeconnect.jpg",
+    liveUrl: "#",
+    githubUrl: "#",
+    featured: false,
   },
   {
-    id: "north-star",
-    title: "North Star Commerce",
+    id: "mock-project-2",
+    title: "Aura E-Commerce (Mock)",
     description:
-      "An ecommerce redesign that improved navigation, conversion flow, and product discovery.",
-    tags: ["UI/UX", "Tailwind", "Performance"],
-    imageUrl: "/images/north-star.jpg",
-    liveUrl: "https://example.com/north-star",
-    githubUrl: "https://github.com/chirag/north-star",
+      "Another mock project for testing the stacking effect. A modern, high-performance headless e-commerce storefront with complex filtering.",
+    tags: ["React", "Shopify Storefront API", "TypeScript"],
+    imageUrl: "/images/codeconnect.jpg",
+    liveUrl: "#",
+    githubUrl: "#",
     featured: false,
   },
 ];
@@ -116,27 +116,27 @@ export const skills: SkillGroup[] = [
   },
 ];
 
-export const experience: ExperienceItem[] = [
+export const studies: StudyItem[] = [
   {
-    role: "Senior Product Designer",
-    company: "Northstar Labs",
-    duration: "2022 — Present",
+    role: "B.E. in Engineering",
+    company: "Srinivas Institute of Technology",
+    duration: "2024 — 2028",
     description:
-      "Leading product design for a B2B analytics platform, shaping the end-to-end experience and design system.",
+      "Pursuing engineering with a focus on Computer Science.",
   },
   {
-    role: "Frontend Developer",
-    company: "Studio North",
-    duration: "2020 — 2022",
+    role: "Hackathon Runner-Up",
+    company: "Aloysius College Hackathon",
+    duration: "Jan 31, 2026",
     description:
-      "Built modern, responsive web experiences for clients in fintech, education, and creative industries.",
+      "Secured runner-up position in a hackathon competition.",
   },
   {
-    role: "Visual Designer",
-    company: "Freelance",
-    duration: "2018 — 2020",
+    role: "Hackathon Runner-Up",
+    company: "Sahyadri College Hackathon",
+    duration: "Jul 11, 2026",
     description:
-      "Delivered brand, website, and digital campaign assets for startups and independent founders.",
+      "Secured runner-up position in a hackathon competition.",
   },
 ];
 

@@ -1,35 +1,46 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { skills } from "@/content/site-config";
-import { getMotionProps, staggerContainer, staggerItem, transitionSettings, usePrefersReducedMotionSafe } from "@/lib/animations";
+import { staggerContainer, staggerItem, transitionSettings, usePrefersReducedMotionSafe } from "@/lib/animations";
+
+function StaggerItem({ children, index, progress, shouldReduceMotion, className }: { children: React.ReactNode, index: number, progress: any, shouldReduceMotion: boolean, className?: string }) {
+  const start = index * 0.15;
+  const end = Math.min(start + 0.5, 1);
+  const y = useTransform(progress, [start, end], [60, 0]);
+  const opacity = useTransform(progress, [start, end], [0, 1]);
+
+  return (
+    <motion.div className={className} style={{ y: shouldReduceMotion ? 0 : y, opacity: shouldReduceMotion ? 1 : opacity }}>
+      {children}
+    </motion.div>
+  );
+}
 
 export function Skills() {
   const shouldReduceMotion = usePrefersReducedMotionSafe();
-  const motionProps = getMotionProps(shouldReduceMotion);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start 80%"]
+  });
 
   return (
-    <section id="skills" className="scroll-mt-24 py-20 sm:py-24">
-      <motion.div className="mx-auto max-w-6xl" {...motionProps}>
-        <div className="max-w-2xl">
+    <section id="skills" ref={sectionRef} className="scroll-mt-24 py-20 sm:py-24 overflow-hidden">
+      <div className="mx-auto max-w-6xl">
+        <StaggerItem index={0} progress={scrollYProgress} shouldReduceMotion={shouldReduceMotion} className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-accent">
             Skills
           </p>
-          <h2 className="mt-4 font-heading text-3xl font-semibold text-foreground sm:text-4xl">
+          <h2 className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             A blend of visual, technical, and product-focused capabilities.
           </h2>
-        </div>
+        </StaggerItem>
 
-        <motion.div
-          className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3"
-          initial={shouldReduceMotion ? "visible" : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={staggerContainer}
-          transition={shouldReduceMotion ? { duration: 0.01 } : { ...transitionSettings, staggerChildren: 0.08 }}
-        >
-          {skills.map((group) => (
-            <motion.div key={group.category} className="rounded-3xl border border-border bg-background p-6 shadow-sm" variants={staggerItem}>
+        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {skills.map((group, i) => (
+            <StaggerItem key={group.category} index={i + 1} progress={scrollYProgress} shouldReduceMotion={shouldReduceMotion} className="rounded-3xl border border-border bg-background p-6 shadow-sm transition duration-300 hover:border-accent/50 hover:shadow-[0_8px_30px_hsl(var(--accent)/0.08)]">
               <h3 className="font-heading text-xl font-semibold text-foreground">
                 {group.category}
               </h3>
@@ -43,10 +54,10 @@ export function Skills() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </StaggerItem>
           ))}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }
