@@ -18,28 +18,31 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
 
+  const triggerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: entryProgress } = useScroll({
-    target: wrapperRef,
-    offset: ["start end", "center center"]
+    target: triggerRef,
+    offset: ["start 95%", "center center"]
   });
 
   const leftX = useTransform(entryProgress, [0, 1], [-100, 0]);
   const rightX = useTransform(entryProgress, [0, 1], [100, 0]);
+  const entryOpacity = useTransform(entryProgress, [0, 1], [0, 1]);
 
   return (
-    <div ref={wrapperRef} className="sticky top-24 h-auto" style={{ zIndex: index }}>
-      <motion.article
-        style={{
-          scale: shouldReduceMotion ? 1 : scale,
-          opacity: shouldReduceMotion ? 1 : opacity,
-          transformOrigin: "top center",
-        }}
-        className="flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background shadow-md transition-all duration-300 hover:border-accent/50 hover:shadow-[0_15px_40px_hsl(var(--accent)/0.12)] lg:h-[480px] lg:flex-row"
-      >
-        <motion.div 
-          className="relative h-64 overflow-hidden bg-muted lg:h-full lg:w-1/2"
-          style={{ x: shouldReduceMotion ? 0 : leftX }}
+    <div ref={triggerRef}>
+      <div ref={wrapperRef} className="sticky top-24 h-auto" style={{ zIndex: index }}>
+        <motion.article
+          style={{
+            scale: shouldReduceMotion ? 1 : scale,
+            opacity: shouldReduceMotion ? 1 : opacity,
+            transformOrigin: "top center",
+          }}
+          className="flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background shadow-md transition-all duration-300 hover:border-accent/50 hover:shadow-[0_15px_40px_hsl(var(--accent)/0.12)] lg:h-[480px] lg:flex-row"
         >
+          <motion.div 
+            className="relative h-64 overflow-hidden bg-muted lg:h-full lg:w-1/2"
+            style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
+          >
           <Image
             src={project.imageUrl}
             alt={`${project.title} preview`}
@@ -47,11 +50,11 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
             height={800}
             className="h-full w-full object-cover transition duration-300 hover:scale-[1.02]"
           />
-        </motion.div>
-        <motion.div 
-          className="flex flex-1 flex-col justify-center p-8 lg:w-1/2 lg:p-12"
-          style={{ x: shouldReduceMotion ? 0 : rightX }}
-        >
+          </motion.div>
+          <motion.div 
+            className="flex flex-1 flex-col justify-center p-8 lg:w-1/2 lg:p-12"
+            style={{ x: shouldReduceMotion ? 0 : rightX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
+          >
           <div className="flex items-start justify-between gap-3">
             <h3 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
               {project.title}
@@ -94,9 +97,10 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
               GitHub
               <ArrowUpRight size={18} />
             </a>
-          </div>
-        </motion.div>
-      </motion.article>
+            </div>
+          </motion.div>
+        </motion.article>
+      </div>
     </div>
   );
 }

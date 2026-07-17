@@ -12,18 +12,19 @@ export function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "center center"]
+    offset: ["start 95%", "center center"]
   });
 
   const leftX = useTransform(scrollYProgress, [0, 1], [-100, 0]);
   const rightX = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <section id="about" ref={sectionRef} className="scroll-mt-24 py-20 sm:py-24 overflow-hidden">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
         <motion.div 
           className="flex justify-center lg:justify-start"
-          style={{ x: shouldReduceMotion ? 0 : leftX }}
+          style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : opacity }}
         >
           <div className="w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-muted p-3 shadow-sm">
             <Image
@@ -36,7 +37,7 @@ export function About() {
           </div>
         </motion.div>
 
-        <motion.div style={{ x: shouldReduceMotion ? 0 : rightX }}>
+        <motion.div style={{ x: shouldReduceMotion ? 0 : rightX, opacity: shouldReduceMotion ? 1 : opacity }}>
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-accent">
             About
           </p>

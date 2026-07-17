@@ -12,13 +12,8 @@ export function Hero() {
   const shouldReduceMotion = usePrefersReducedMotionSafe();
   const heroRef = useRef<HTMLElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start end", "center center"],
-  });
-
-  const leftX = useTransform(scrollYProgress, [0, 1], [-100, 0]);
-  const rightX = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  // Removed useScroll entry animation because Hero is at the top of the page.
+  // Scroll-linked entry only works if you can scroll *down* to the element.
 
   return (
     <section ref={heroRef} id="hero" className="relative scroll-mt-24 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:pt-12 lg:pb-24">
@@ -35,7 +30,9 @@ export function Hero() {
       >
         <motion.div 
           className="flex flex-col justify-center" 
-          style={{ x: shouldReduceMotion ? 0 : leftX }}
+          initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <motion.p className="text-sm font-semibold uppercase tracking-[0.35em] text-accent" variants={staggerItem}>
             Portfolio
@@ -88,7 +85,9 @@ export function Hero() {
         <motion.div className="flex items-center justify-center" variants={staggerItem}>
           <motion.div 
             className="w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-muted p-4 shadow-sm"
-            style={{ x: shouldReduceMotion ? 0 : rightX }}
+            initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
             <Image
               src="/images/profile.png"

@@ -50,12 +50,12 @@ export const personalInfo: PersonalInfo = {
 export const socialLinks: SocialLink[] = [
   {
     label: "GitHub",
-    url: "https://github.com/chirag",
+    url: "https://github.com/Chiragkulal07",
     icon: "github",
   },
   {
     label: "LinkedIn",
-    url: "https://linkedin.com/in/chirag",
+    url: "https://www.linkedin.com/in/chirag-kulal-0b9b9b328/",
     icon: "linkedin",
   },
   {
@@ -77,28 +77,7 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/Karthikshettyhub/codeconnnect.git",
     featured: true,
   },
-  {
-    id: "mock-project-1",
-    title: "Nexus Dashboard (Mock)",
-    description:
-      "A mock analytics dashboard added temporarily to test the scroll-linked sticky card stacking effect. It features data visualization and customizable widgets.",
-    tags: ["Next.js", "Tailwind", "Framer Motion", "Recharts"],
-    imageUrl: "/images/codeconnect.jpg",
-    liveUrl: "#",
-    githubUrl: "#",
-    featured: false,
-  },
-  {
-    id: "mock-project-2",
-    title: "Aura E-Commerce (Mock)",
-    description:
-      "Another mock project for testing the stacking effect. A modern, high-performance headless e-commerce storefront with complex filtering.",
-    tags: ["React", "Shopify Storefront API", "TypeScript"],
-    imageUrl: "/images/codeconnect.jpg",
-    liveUrl: "#",
-    githubUrl: "#",
-    featured: false,
-  },
+  
 ];
 
 export const skills: SkillGroup[] = [
