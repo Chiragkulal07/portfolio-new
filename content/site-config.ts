@@ -65,20 +65,9 @@ export const socialLinks: SocialLink[] = [
   },
 ];
 
-export const projects: Project[] = [
-  {
-    id: "codeconnect",
-    title: "CodeConnect",
-    description:
-      "A real-time collaborative code editor that lets multiple developers write, edit, and debug code together instantly using Socket.io.",
-    tags: ["Socket.io", "Node.js", "React", "Real-time Collaboration"],
-    imageUrl: "/images/codeconnect.jpg",
-    liveUrl: "",
-    githubUrl: "https://github.com/Karthikshettyhub/codeconnnect.git",
-    featured: true,
-  },
-  
-];
+import projectsData from "./projects.json";
+
+export const projects: Project[] = projectsData;
 
 export const skills: SkillGroup[] = [
   {

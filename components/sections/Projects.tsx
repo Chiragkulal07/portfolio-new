@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { projects, Project } from "@/content/site-config";
+import { projects as fallbackProjects, Project } from "@/content/site-config";
 import { usePrefersReducedMotionSafe } from "@/lib/animations";
 
 function ProjectCard({ project, index, shouldReduceMotion }: { project: Project; index: number; shouldReduceMotion: boolean }) {
@@ -106,9 +106,27 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
 }
 
 export function Projects() {
+  const [projectList, setProjectList] = useState<Project[]>(fallbackProjects);
   const shouldReduceMotion = usePrefersReducedMotionSafe();
   const sectionRef = useRef<HTMLElement>(null);
   
+  useEffect(() => {
+    async function loadProjects() {
+      try {
+        const response = await fetch("/api/projects");
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            setProjectList(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load dynamic projects list, using fallback", err);
+      }
+    }
+    loadProjects();
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "start center"]
@@ -138,7 +156,7 @@ export function Projects() {
         </div>
 
         <div className="flex flex-col gap-12 lg:gap-24 relative">
-          {projects.map((project, index) => (
+          {projectList.map((project, index) => (
             <ProjectCard 
               key={project.id} 
               project={project} 

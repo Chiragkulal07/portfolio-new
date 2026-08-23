@@ -1,0 +1,29 @@
+[
+  {
+    "id": "codeconnect",
+    "title": "CodeConnect",
+    "description": "A real-time collaborative code editor that lets multiple developers write, edit, and debug code together instantly using Socket.io.",
+    "tags": [
+      "Socket.io",
+      "Node.js",
+      "React",
+      "Real-time Collaboration"
+    ],
+    "imageUrl": "/images/codeconnect.jpg",
+    "liveUrl": "",
+    "githubUrl": "https://github.com/Karthikshettyhub/codeconnnect.git",
+    "featured": true
+  },
+  {
+    "id": "ai-campus-3549",
+    "title": "ai-campus",
+    "description": "coming soon....",
+    "tags": [
+      "coming soon ...."
+    ],
+    "imageUrl": "/images/1787491123539-ai-campus.png",
+    "liveUrl": "https://ai-campus-nine.vercel.app/",
+    "githubUrl": "https://github.com/Chiragkulal07/ai-campus.git",
+    "featured": true
+  }
+]
