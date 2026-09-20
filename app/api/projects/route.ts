@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { del, list, put } from "@vercel/blob";
 import fs from "fs/promises";
 import path from "path";
 
 const PROJECTS_FILE_PATH = path.join(process.cwd(), "content", "projects.json");
 const IMAGES_DIR = path.join(process.cwd(), "public", "images");
+const PROJECTS_BLOB_PATH = "portfolio/projects.json";
 
 interface Project {
   id: string;
@@ -16,20 +18,100 @@ interface Project {
   featured: boolean;
 }
 
-// Helper to ensure JSON file exists and read it
-async function readProjects() {
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "An unexpected error occurred.";
+}
+
+function getStorageErrorStatus(error: unknown) {
+  return getErrorMessage(error).includes("BLOB_READ_WRITE_TOKEN") ? 503 : 500;
+}
+
+function ensureVercelStorageConfigured() {
+  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("Project storage is not configured. Add BLOB_READ_WRITE_TOKEN in Vercel project settings.");
+  }
+}
+
+async function readProjects(): Promise<Project[]> {
+  ensureVercelStorageConfigured();
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { blobs } = await list({ prefix: PROJECTS_BLOB_PATH, limit: 1 });
+    const projectBlob = blobs.find((blob) => blob.pathname === PROJECTS_BLOB_PATH);
+
+    if (projectBlob) {
+      const response = await fetch(projectBlob.url, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("Unable to read projects from Vercel Blob.");
+      }
+      return (await response.json()) as Project[];
+    }
+  }
+
   try {
     const data = await fs.readFile(PROJECTS_FILE_PATH, "utf-8");
-    return JSON.parse(data);
+    return JSON.parse(data) as Project[];
   } catch (error) {
-    // If file doesn't exist, return empty array
     return [];
   }
 }
 
-// Helper to write to the JSON file
 async function writeProjects(projects: Project[]) {
+  ensureVercelStorageConfigured();
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    await put(PROJECTS_BLOB_PATH, JSON.stringify(projects, null, 2), {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: "application/json",
+    });
+    return;
+  }
+
   await fs.writeFile(PROJECTS_FILE_PATH, JSON.stringify(projects, null, 2), "utf-8");
+}
+
+async function storeImage(imageFile: File, title: string) {
+  ensureVercelStorageConfigured();
+
+  const safeTitle = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+  const extension = path.extname(imageFile.name) || ".jpg";
+  const filename = `${Date.now()}-${safeTitle}${extension}`;
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(`portfolio/images/${filename}`, imageFile, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+    return blob.url;
+  }
+
+  await fs.mkdir(IMAGES_DIR, { recursive: true });
+  const filePath = path.join(IMAGES_DIR, filename);
+  const arrayBuffer = await imageFile.arrayBuffer();
+  await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+  return `/images/${filename}`;
+}
+
+async function deleteImage(imageUrl: string) {
+  if (!imageUrl || imageUrl.includes("codeconnect.jpg")) return;
+
+  if (imageUrl.startsWith("http") && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      await del(imageUrl);
+    } catch (error) {
+      console.error("Failed to delete blob image:", error);
+    }
+    return;
+  }
+
+  if (imageUrl.startsWith("/images/")) {
+    try {
+      await fs.unlink(path.join(IMAGES_DIR, imageUrl.replace("/images/", "")));
+    } catch (error) {
+      console.error("Failed to delete image file:", error);
+    }
+  }
 }
 
 export async function GET() {
@@ -37,7 +119,7 @@ export async function GET() {
     const projects = await readProjects();
     return NextResponse.json(projects);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: getStorageErrorStatus(error) });
   }
 }
 
@@ -58,21 +140,7 @@ export async function POST(request: NextRequest) {
 
     let imageUrl = "/images/codeconnect.jpg"; // default fallback
 
-    if (imageFile && imageFile.size > 0) {
-      // Create images folder if not exists
-      await fs.mkdir(IMAGES_DIR, { recursive: true });
-
-      const safeTitle = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-      const extension = path.extname(imageFile.name) || ".jpg";
-      const filename = `${Date.now()}-${safeTitle}${extension}`;
-      const filePath = path.join(IMAGES_DIR, filename);
-
-      const arrayBuffer = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      await fs.writeFile(filePath, buffer);
-
-      imageUrl = `/images/${filename}`;
-    }
+    if (imageFile && imageFile.size > 0) imageUrl = await storeImage(imageFile, title);
 
     const projects = await readProjects();
     const id = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-") + "-" + Date.now().toString().slice(-4);
@@ -96,8 +164,8 @@ export async function POST(request: NextRequest) {
     await writeProjects(projects);
 
     return NextResponse.json(newProject, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: getStorageErrorStatus(error) });
   }
 }
 
@@ -133,17 +201,7 @@ export async function PUT(request: NextRequest) {
     const existingProject = projects[projectIndex];
     let imageUrl = existingProject.imageUrl;
 
-    if (imageFile && imageFile.size > 0) {
-      await fs.mkdir(IMAGES_DIR, { recursive: true });
-
-      const safeTitle = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-      const extension = path.extname(imageFile.name) || ".jpg";
-      const filename = `${Date.now()}-${safeTitle}${extension}`;
-      const filePath = path.join(IMAGES_DIR, filename);
-      const arrayBuffer = await imageFile.arrayBuffer();
-      await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-      imageUrl = `/images/${filename}`;
-    }
+    if (imageFile && imageFile.size > 0) imageUrl = await storeImage(imageFile, title);
 
     const tags = tagsString
       ? tagsString.split(",").map((tag) => tag.trim()).filter((tag) => tag.length > 0)
@@ -163,22 +221,11 @@ export async function PUT(request: NextRequest) {
     projects[projectIndex] = updatedProject;
     await writeProjects(projects);
 
-    if (
-      imageUrl !== existingProject.imageUrl &&
-      existingProject.imageUrl?.startsWith("/images/") &&
-      !existingProject.imageUrl.includes("codeconnect.jpg")
-    ) {
-      const oldImagePath = path.join(IMAGES_DIR, existingProject.imageUrl.replace("/images/", ""));
-      try {
-        await fs.unlink(oldImagePath);
-      } catch (error) {
-        console.error("Failed to delete replaced image file:", error);
-      }
-    }
+    if (imageUrl !== existingProject.imageUrl) await deleteImage(existingProject.imageUrl);
 
     return NextResponse.json(updatedProject);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: getStorageErrorStatus(error) });
   }
 }
 
@@ -198,22 +245,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    // Attempt to delete the image file if it's not the placeholder
-    if (projectToDelete.imageUrl && projectToDelete.imageUrl.startsWith("/images/") && !projectToDelete.imageUrl.includes("codeconnect.jpg")) {
-      const filename = projectToDelete.imageUrl.replace("/images/", "");
-      const filePath = path.join(IMAGES_DIR, filename);
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        console.error("Failed to delete image file:", err);
-      }
-    }
+    await deleteImage(projectToDelete.imageUrl);
 
     const updatedProjects = projects.filter((p: any) => p.id !== id);
     await writeProjects(updatedProjects);
 
     return NextResponse.json({ success: true, message: "Project deleted successfully" });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: getStorageErrorStatus(error) });
   }
 }
