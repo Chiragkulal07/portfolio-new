@@ -5,6 +5,17 @@ import path from "path";
 const PROJECTS_FILE_PATH = path.join(process.cwd(), "content", "projects.json");
 const IMAGES_DIR = path.join(process.cwd(), "public", "images");
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  imageUrl: string;
+  liveUrl: string;
+  githubUrl: string;
+  featured: boolean;
+}
+
 // Helper to ensure JSON file exists and read it
 async function readProjects() {
   try {
@@ -17,7 +28,7 @@ async function readProjects() {
 }
 
 // Helper to write to the JSON file
-async function writeProjects(projects: any[]) {
+async function writeProjects(projects: Project[]) {
   await fs.writeFile(PROJECTS_FILE_PATH, JSON.stringify(projects, null, 2), "utf-8");
 }
 
@@ -85,6 +96,87 @@ export async function POST(request: NextRequest) {
     await writeProjects(projects);
 
     return NextResponse.json(newProject, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
+    }
+
+    const formData = await request.formData();
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const tagsString = formData.get("tags") as string;
+    const liveUrl = (formData.get("liveUrl") as string) || "";
+    const githubUrl = (formData.get("githubUrl") as string) || "";
+    const featured = formData.get("featured") === "true";
+    const imageFile = formData.get("image") as File | null;
+
+    if (!title || !description) {
+      return NextResponse.json({ error: "Title and description are required." }, { status: 400 });
+    }
+
+    const projects = await readProjects();
+    const projectIndex = projects.findIndex((project: Project) => project.id === id);
+
+    if (projectIndex === -1) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    const existingProject = projects[projectIndex];
+    let imageUrl = existingProject.imageUrl;
+
+    if (imageFile && imageFile.size > 0) {
+      await fs.mkdir(IMAGES_DIR, { recursive: true });
+
+      const safeTitle = title.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+      const extension = path.extname(imageFile.name) || ".jpg";
+      const filename = `${Date.now()}-${safeTitle}${extension}`;
+      const filePath = path.join(IMAGES_DIR, filename);
+      const arrayBuffer = await imageFile.arrayBuffer();
+      await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+      imageUrl = `/images/${filename}`;
+    }
+
+    const tags = tagsString
+      ? tagsString.split(",").map((tag) => tag.trim()).filter((tag) => tag.length > 0)
+      : [];
+
+    const updatedProject = {
+      ...existingProject,
+      title,
+      description,
+      tags,
+      imageUrl,
+      liveUrl,
+      githubUrl,
+      featured,
+    };
+
+    projects[projectIndex] = updatedProject;
+    await writeProjects(projects);
+
+    if (
+      imageUrl !== existingProject.imageUrl &&
+      existingProject.imageUrl?.startsWith("/images/") &&
+      !existingProject.imageUrl.includes("codeconnect.jpg")
+    ) {
+      const oldImagePath = path.join(IMAGES_DIR, existingProject.imageUrl.replace("/images/", ""));
+      try {
+        await fs.unlink(oldImagePath);
+      } catch (error) {
+        console.error("Failed to delete replaced image file:", error);
+      }
+    }
+
+    return NextResponse.json(updatedProject);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

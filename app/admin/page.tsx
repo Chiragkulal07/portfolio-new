@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Trash2, Plus, Upload, Loader2, Sparkles, Check, AlertCircle } from "lucide-react";
+import { ArrowLeft, Trash2, Plus, Upload, Loader2, Sparkles, Check, AlertCircle, Pencil, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -34,9 +35,12 @@ export default function AdminPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const showFeedback = (text: string, type: "success" | "error") => {
+    setMessage({ text, type });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
 
   const fetchProjects = async () => {
     try {
@@ -55,12 +59,9 @@ export default function AdminPage() {
     }
   };
 
-  const showFeedback = (text: string, type: "success" | "error") => {
-    setMessage({ text, type });
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
-  };
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,6 +73,33 @@ export default function AdminPage() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setTags("");
+    setLiveUrl("");
+    setGithubUrl("");
+    setFeatured(false);
+    setImageFile(null);
+    setImagePreview(null);
+    setEditingProjectId(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleEdit = (project: Project) => {
+    setEditingProjectId(project.id);
+    setTitle(project.title);
+    setDescription(project.description);
+    setTags(project.tags.join(", "));
+    setLiveUrl(project.liveUrl);
+    setGithubUrl(project.githubUrl);
+    setFeatured(project.featured);
+    setImageFile(null);
+    setImagePreview(project.imageUrl);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -94,23 +122,15 @@ export default function AdminPage() {
         formData.append("image", imageFile);
       }
 
-      const res = await fetch("/api/projects", {
-        method: "POST",
+      const endpoint = editingProjectId ? `/api/projects?id=${editingProjectId}` : "/api/projects";
+      const res = await fetch(endpoint, {
+        method: editingProjectId ? "PUT" : "POST",
         body: formData,
       });
 
       if (res.ok) {
-        showFeedback("Project uploaded successfully!", "success");
-        // Reset form
-        setTitle("");
-        setDescription("");
-        setTags("");
-        setLiveUrl("");
-        setGithubUrl("");
-        setFeatured(false);
-        setImageFile(null);
-        setImagePreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        showFeedback(editingProjectId ? "Project updated successfully!" : "Project uploaded successfully!", "success");
+        resetForm();
         
         // Refresh list
         fetchProjects();
@@ -190,7 +210,8 @@ export default function AdminPage() {
           <div className="lg:col-span-3">
             <div className="rounded-[2rem] border border-border bg-card/40 backdrop-blur-md p-8 shadow-xl">
               <h2 className="text-2xl font-bold font-heading mb-6 flex items-center gap-2">
-                <Plus size={22} className="text-accent" /> Add New Project
+                {editingProjectId ? <Pencil size={22} className="text-accent" /> : <Plus size={22} className="text-accent" />}
+                {editingProjectId ? "Edit Project" : "Add New Project"}
               </h2>
 
               <form onSubmit={handleFormSubmit} className="space-y-6">
@@ -319,14 +340,23 @@ export default function AdminPage() {
                 >
                   {submitting ? (
                     <>
-                      <Loader2 size={18} className="animate-spin" /> Uploading project...
+                      <Loader2 size={18} className="animate-spin" /> {editingProjectId ? "Saving changes..." : "Uploading project..."}
                     </>
                   ) : (
                     <>
-                      Upload and Publish
+                      {editingProjectId ? "Save Changes" : "Upload and Publish"}
                     </>
                   )}
                 </button>
+                {editingProjectId && (
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-border text-foreground/70 font-semibold py-3 px-6 hover:bg-muted transition"
+                  >
+                    <X size={18} /> Cancel Editing
+                  </button>
+                )}
               </form>
             </div>
           </div>
@@ -389,13 +419,22 @@ export default function AdminPage() {
                             )}
                           </div>
 
-                          <button
-                            onClick={() => handleDelete(project.id)}
-                            className="text-foreground/40 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-500/10 transition"
-                            title="Delete project"
-                          >
-                            <Trash2 size={15} />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleEdit(project)}
+                              className="text-foreground/40 hover:text-accent p-1.5 rounded-lg hover:bg-accent/10 transition"
+                              title="Edit project"
+                            >
+                              <Pencil size={15} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(project.id)}
+                              className="text-foreground/40 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-500/10 transition"
+                              title="Delete project"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
