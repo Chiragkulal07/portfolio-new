@@ -13,8 +13,8 @@ export function Contact() {
     offset: ["start 95%", "center center"]
   });
 
-  const leftX = useTransform(scrollYProgress, [0, 1], [-100, 0]);
-  const rightX = useTransform(scrollYProgress, [0, 1], [100, 0]);
+  const leftX = useTransform(scrollYProgress, [0, 1], [-24, 0]);
+  const rightX = useTransform(scrollYProgress, [0, 1], [24, 0]);
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const [formValues, setFormValues] = useState({
@@ -65,23 +65,15 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" ref={sectionRef} className="relative scroll-mt-24 py-20 sm:py-24 overflow-hidden">
-      {/* Background Depth Layers */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_hsl(var(--accent)/0.12),_transparent_60%)]"></div>
-      <div className="pointer-events-none absolute inset-0 bg-noise opacity-[0.03] dark:opacity-[0.05]"></div>
-      
-      <div 
-        className="relative z-10 mx-auto max-w-6xl rounded-[2rem] border border-border bg-background/80 backdrop-blur p-8 shadow-sm sm:p-10 lg:p-14 transition hover:shadow-[0_8px_40px_hsl(var(--accent)/0.05)]" 
-      >
+    <section id="contact" ref={sectionRef} className="relative scroll-mt-24 overflow-hidden py-20 sm:py-28">
+      <div className="relative z-10 mx-auto max-w-6xl border-t-2 border-foreground pt-10 sm:pt-12">
         <motion.div style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : opacity }} className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-accent">
-            Contact
-          </p>
-          <h2 className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <p className="eyebrow">Start a conversation</p>
+          <h2 className="mt-6 font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl">
             Let&apos;s discuss your next product or website.
           </h2>
-          <p className="mt-5 text-lg leading-8 text-foreground/80">
-            This form is ready for future submission logic, but for now it stays purely visual and accessible.
+          <p className="mt-5 max-w-xl text-lg leading-8 text-foreground/65">
+            Have a product, interface, or frontend challenge in mind? Send a note and let&apos;s make the next step concrete.
           </p>
         </motion.div>
 
@@ -98,7 +90,7 @@ export function Contact() {
                 value={formValues.name}
                 onChange={handleChange}
                 aria-describedby={errors.name ? "name-error" : undefined}
-                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="w-full rounded-none border-0 border-b border-border bg-transparent px-0 py-3 text-foreground outline-none transition focus:border-accent focus:ring-0"
                 placeholder="Your name"
                 suppressHydrationWarning
               />
@@ -116,7 +108,7 @@ export function Contact() {
                 value={formValues.email}
                 onChange={handleChange}
                 aria-describedby={errors.email ? "email-error" : undefined}
-                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="w-full rounded-none border-0 border-b border-border bg-transparent px-0 py-3 text-foreground outline-none transition focus:border-accent focus:ring-0"
                 placeholder="you@example.com"
                 suppressHydrationWarning
               />
@@ -135,7 +127,7 @@ export function Contact() {
               value={formValues.message}
               onChange={handleChange}
               aria-describedby={errors.message ? "message-error" : undefined}
-              className="h-full min-h-[220px] w-full rounded-2xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="h-full min-h-[220px] w-full resize-y rounded-none border-0 border-b border-border bg-transparent px-0 py-3 text-foreground outline-none transition focus:border-accent focus:ring-0"
               placeholder="Tell me about your project..."
               suppressHydrationWarning
             />
@@ -160,7 +152,7 @@ export function Contact() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent/90 hover:shadow-[0_0_20px_hsl(var(--accent)/0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-6 inline-flex items-center justify-center bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               suppressHydrationWarning
             >
               {isSubmitting ? "Sending..." : "Send Message"}

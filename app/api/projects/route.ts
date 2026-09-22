@@ -51,7 +51,7 @@ async function readProjects(): Promise<Project[]> {
   try {
     const data = await fs.readFile(PROJECTS_FILE_PATH, "utf-8");
     return JSON.parse(data) as Project[];
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -118,7 +118,7 @@ export async function GET() {
   try {
     const projects = await readProjects();
     return NextResponse.json(projects);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({ error: getErrorMessage(error) }, { status: getStorageErrorStatus(error) });
   }
 }
@@ -239,7 +239,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const projects = await readProjects();
-    const projectToDelete = projects.find((p: any) => p.id === id);
+    const projectToDelete = projects.find((project: Project) => project.id === id);
 
     if (!projectToDelete) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -247,7 +247,7 @@ export async function DELETE(request: NextRequest) {
 
     await deleteImage(projectToDelete.imageUrl);
 
-    const updatedProjects = projects.filter((p: any) => p.id !== id);
+    const updatedProjects = projects.filter((project: Project) => project.id !== id);
     await writeProjects(updatedProjects);
 
     return NextResponse.json({ success: true, message: "Project deleted successfully" });

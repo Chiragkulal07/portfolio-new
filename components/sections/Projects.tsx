@@ -15,8 +15,8 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
     offset: ["start 96px", "end 96px"]
   });
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.97]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: entryProgress } = useScroll({
@@ -24,8 +24,8 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
     offset: ["start 95%", "center center"]
   });
 
-  const leftX = useTransform(entryProgress, [0, 1], [-100, 0]);
-  const rightX = useTransform(entryProgress, [0, 1], [100, 0]);
+  const leftX = useTransform(entryProgress, [0, 1], [-28, 0]);
+  const rightX = useTransform(entryProgress, [0, 1], [28, 0]);
   const entryOpacity = useTransform(entryProgress, [0, 1], [0, 1]);
 
   return (
@@ -37,10 +37,10 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
             opacity: shouldReduceMotion ? 1 : opacity,
             transformOrigin: "top center",
           }}
-          className="flex flex-col overflow-hidden rounded-[2rem] border border-border bg-background shadow-md transition-all duration-300 hover:border-accent/50 hover:shadow-[0_15px_40px_hsl(var(--accent)/0.12)] lg:h-[480px] lg:flex-row"
+          className="flex flex-col overflow-hidden border border-border bg-background/45 transition-colors duration-300 hover:border-accent lg:h-[480px] lg:flex-row"
         >
           <motion.div 
-            className="relative h-64 overflow-hidden bg-muted lg:h-full lg:w-1/2"
+            className="relative h-64 overflow-hidden border-b border-border bg-muted lg:h-full lg:w-[48%] lg:border-b-0 lg:border-r"
             style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
           >
           <Image
@@ -52,38 +52,38 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
           />
           </motion.div>
           <motion.div 
-            className="flex flex-1 flex-col justify-center p-8 lg:w-1/2 lg:p-12"
+            className="flex flex-1 flex-col justify-center p-8 lg:w-[52%] lg:p-12"
             style={{ x: shouldReduceMotion ? 0 : rightX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
           >
           <div className="flex items-start justify-between gap-3">
-            <h3 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+            <h3 className="font-heading text-3xl font-semibold tracking-[-0.03em] text-foreground sm:text-4xl">
               {project.title}
             </h3>
             {project.featured ? (
-              <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent">
                 Featured
               </span>
             ) : null}
           </div>
-          <p className="mt-4 text-base leading-8 text-foreground/80 lg:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-8 text-foreground/70 lg:text-lg">
             {project.description}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-7 flex flex-wrap gap-x-4 gap-y-2">
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-border px-4 py-1.5 text-sm font-medium text-foreground/70"
+                className="border-b border-border pb-1 text-sm font-medium text-foreground/60"
               >
                 {tag}
               </span>
             ))}
           </div>
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-wrap gap-6">
             <a
               href={project.liveUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-accent transition hover:text-accent/80"
+              className="editorial-link inline-flex items-center gap-2 text-sm font-semibold text-accent transition hover:text-accent/80"
             >
               Live Preview
               <ArrowUpRight size={18} />
@@ -92,7 +92,7 @@ function ProjectCard({ project, index, shouldReduceMotion }: { project: Project;
               href={project.githubUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground"
+              className="editorial-link inline-flex items-center gap-2 text-sm font-semibold text-foreground/70 transition hover:text-foreground"
             >
               GitHub
               <ArrowUpRight size={18} />
@@ -137,7 +137,7 @@ export function Projects() {
   const x = useTransform(scrollYProgress, [0, 1], [100, 0]);
 
   return (
-    <section id="projects" ref={sectionRef} className="scroll-mt-24 py-20 sm:py-24 overflow-hidden">
+    <section id="projects" ref={sectionRef} className="scroll-mt-24 overflow-hidden border-b border-border/80 py-20 sm:py-28">
       <motion.div 
         className="mx-auto max-w-6xl"
         style={{
@@ -146,16 +146,14 @@ export function Projects() {
           x: shouldReduceMotion ? 0 : x
         }}
       >
-        <div className="max-w-2xl mb-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-accent">
-            Projects
-          </p>
-          <h2 className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <div className="mb-14 max-w-2xl">
+          <p className="eyebrow">Selected work</p>
+          <h2 className="mt-6 font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl">
             Selected work across product, design, and frontend craft.
           </h2>
         </div>
 
-        <div className="flex flex-col gap-12 lg:gap-24 relative">
+        <div className="relative flex flex-col gap-12 lg:gap-20">
           {projectList.map((project, index) => (
             <ProjectCard 
               key={project.id} 

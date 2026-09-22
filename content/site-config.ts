@@ -39,12 +39,12 @@ export interface StudyItem {
 
 export const personalInfo: PersonalInfo = {
   name: "Chirag",
-  title: "Product Designer & Frontend Developer",
-  tagline: "Crafting thoughtful digital experiences with modern web technologies.",
-  bio: "I am a multidisciplinary creator focused on building polished, user-centered products that blend design and engineering.",
-  email: "hello@chirag.dev",
+  title: "Full-Stack Developer",
+  tagline: "Building real-time, AI-powered web applications with scalable systems.",
+  bio: "I am a full-stack developer who enjoys building real-time, AI-powered web applications, from collaborative systems to AI-driven learning tools.",
+  email: "chiragkulal877@gmail.com",
   location: "Remote · Available worldwide",
-  resumeUrl: "/resume.pdf",
+  resumeUrl: "/resume_chirag.docx",
 };
 
 export const socialLinks: SocialLink[] = [
@@ -71,16 +71,24 @@ export const projects: Project[] = projectsData;
 
 export const skills: SkillGroup[] = [
   {
-    category: "Design",
-    items: ["UI Design", "Design Systems", "Prototyping", "Visual Hierarchy"],
+    category: "Languages",
+    items: ["JavaScript", "Python", "C", "C++"],
   },
   {
     category: "Frontend",
-    items: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+    items: ["React.js", "Next.js", "Vite", "Tailwind CSS", "Framer Motion"],
   },
   {
-    category: "Product",
-    items: ["User Research", "Wireframing", "Cross-functional Collaboration", "Product Thinking"],
+    category: "Backend",
+    items: ["Node.js", "Express.js", "Django", "FastAPI", "WebSocket", "Socket.IO", "JWT", "OAuth2"],
+  },
+  {
+    category: "Data & Infrastructure",
+    items: ["MongoDB", "Mongoose", "Redis", "AWS", "Docker", "Nginx"],
+  },
+  {
+    category: "AI & Real-Time",
+    items: ["Machine Learning", "Deep Learning", "LangGraph", "LangChain", "LLM Integration", "WebRTC", "Pub/Sub Messaging"],
   },
 ];
 
@@ -95,14 +103,14 @@ export const studies: StudyItem[] = [
   {
     role: "Hackathon Runner-Up",
     company: "Aloysius College Hackathon",
-    duration: "Jan 31, 2026",
+    duration: "Jan 2026",
     description:
       "Secured runner-up position in a hackathon competition.",
   },
   {
     role: "Hackathon Runner-Up",
     company: "Sahyadri College Hackathon",
-    duration: "Jul 11, 2026",
+    duration: "Jul 2026",
     description:
       "Secured runner-up position in a hackathon competition.",
   },

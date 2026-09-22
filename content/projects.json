@@ -2,12 +2,16 @@
   {
     "id": "codeconnect",
     "title": "CodeConnect",
-    "description": "A real-time collaborative code editor that lets multiple developers write, edit, and debug code together instantly using Socket.io.",
+    "description": "A real-time collaborative code editor with shared editing, chat, video calls, Google login, and instant code execution across JavaScript, Python, C, C++, and Java.",
     "tags": [
-      "Socket.io",
       "Node.js",
+      "WebSocket",
+      "WebRTC",
       "React",
-      "Real-time Collaboration"
+      "MongoDB",
+      "Redis",
+      "AWS",
+      "Docker"
     ],
     "imageUrl": "/images/codeconnect.jpg",
     "liveUrl": "https://13.49.23.159.nip.io",
@@ -16,10 +20,15 @@
   },
   {
     "id": "ai-campus-3549",
-    "title": "ai-campus",
-    "description": "coming soon....",
+    "title": "RoboCampus (AI Campus)",
+    "description": "An AI-powered social learning platform with a multiplayer virtual campus, real-time games and calls, and personalized learning roadmaps generated with LangGraph.",
     "tags": [
-      "coming soon ...."
+      "React",
+      "Node.js",
+      "Socket.IO",
+      "MongoDB",
+      "Redis",
+      "LangGraph"
     ],
     "imageUrl": "/images/1787491123539-ai-campus.png",
     "liveUrl": "https://ai-campus-nine.vercel.app/",
