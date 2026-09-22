@@ -20,26 +20,26 @@ export function About() {
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section id="about" ref={sectionRef} className="scroll-mt-24 overflow-hidden border-b border-border/80 py-20 sm:py-28">
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-center lg:gap-20">
+    <section id="about" ref={sectionRef} className="scroll-mt-24 overflow-hidden border-b border-border/80 py-16 sm:py-24 lg:py-28">
+      <div className="mx-auto grid max-w-6xl gap-10 sm:gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-center lg:gap-20">
         <motion.div 
           className="flex justify-center lg:justify-start"
           style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : opacity }}
         >
-          <div className="w-full max-w-sm overflow-hidden border border-border bg-muted p-2 shadow-[10px_10px_0_hsl(var(--foreground)/0.08)]">
+          <div className="aspect-square w-full max-w-[16rem] overflow-hidden rounded-full border border-border bg-muted p-2 shadow-[10px_10px_0_hsl(var(--foreground)/0.08)] sm:max-w-sm">
             <Image
               src="/images/profile.png"
               alt="Decorative portrait placeholder for Chirag"
               width={640}
               height={760}
-              className="h-auto w-full object-cover"
+              className="h-full w-full rounded-full object-cover"
             />
           </div>
         </motion.div>
 
         <motion.div style={{ x: shouldReduceMotion ? 0 : rightX, opacity: shouldReduceMotion ? 1 : opacity }}>
           <p className="eyebrow">About</p>
-          <h2 className="mt-6 max-w-2xl font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl">
+          <h2 className="mt-6 max-w-2xl font-heading text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-foreground sm:text-5xl">
             Building real-time systems and AI-powered experiences.
           </h2>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-foreground/70">
