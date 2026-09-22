@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/profile.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: `${personalInfo.name} portfolio preview`,
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteConfig.title} | ${personalInfo.title}`,
     description: siteConfig.description,
-    images: ["/images/profile.png"],
+    images: ["/og-image.png"],
   },
   icons: {
     icon: [{ url: "/file.svg", type: "image/svg+xml" }],

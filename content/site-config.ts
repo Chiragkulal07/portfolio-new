@@ -58,11 +58,6 @@ export const socialLinks: SocialLink[] = [
     url: "https://www.linkedin.com/in/chirag-kulal-0b9b9b328/",
     icon: "linkedin",
   },
-  {
-    label: "Dribbble",
-    url: "https://dribbble.com/chirag",
-    icon: "dribbble",
-  },
 ];
 
 import projectsData from "./projects.json";

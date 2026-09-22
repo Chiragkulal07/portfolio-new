@@ -13,7 +13,7 @@
       "AWS",
       "Docker"
     ],
-    "imageUrl": "/images/codeconnect.jpg",
+    "imageUrl": "/images/codeconnect.png",
     "liveUrl": "https://13.49.23.159.nip.io",
     "githubUrl": "https://github.com/Karthikshettyhub/codeconnnect.git",
     "featured": true
@@ -30,7 +30,7 @@
       "Redis",
       "LangGraph"
     ],
-    "imageUrl": "/images/1787491123539-ai-campus.png",
+    "imageUrl": "/images/ai-campus.png",
     "liveUrl": "https://ai-campus-nine.vercel.app/",
     "githubUrl": "https://github.com/Chiragkulal07/ai-campus.git",
     "featured": true
