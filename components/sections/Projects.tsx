@@ -1,124 +1,142 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { projects as fallbackProjects, Project } from "@/content/site-config";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { ArrowUpRight, Code2 } from "lucide-react";
+import { projects as fallbackProjects, type Project } from "@/content/site-config";
 import { usePrefersReducedMotionSafe } from "@/lib/animations";
+import { Magnetic, SectionHeading, TiltCard } from "@/components/ui/effects";
 
-function ProjectCard({ project, index, shouldReduceMotion }: { project: Project; index: number; shouldReduceMotion: boolean }) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: wrapperRef,
-    offset: ["start 96px", "end 96px"]
-  });
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.97]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
+function ProjectCard({
+  project,
+  index,
+  total,
+  progress,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+}) {
+  const reduce = usePrefersReducedMotionSafe();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: cardRef, offset: ["start end", "start start"] });
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.35, 1]);
 
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: entryProgress } = useScroll({
-    target: triggerRef,
-    offset: ["start 95%", "center center"]
-  });
-
-  const leftX = useTransform(entryProgress, [0, 1], [-28, 0]);
-  const rightX = useTransform(entryProgress, [0, 1], [28, 0]);
-  const entryOpacity = useTransform(entryProgress, [0, 1], [0, 1]);
+  // Earlier cards shrink as later ones stack on top.
+  const targetScale = 1 - (total - index - 1) * 0.05;
+  const scale = useTransform(progress, [index / total, 1], [1, targetScale]);
+  const num = String(index + 1).padStart(2, "0");
 
   return (
-    <div ref={triggerRef}>
-      <div ref={wrapperRef} className="sticky top-24 h-auto" style={{ zIndex: index }}>
-        <motion.article
-          style={{
-            scale: shouldReduceMotion ? 1 : scale,
-            opacity: shouldReduceMotion ? 1 : opacity,
-            transformOrigin: "top center",
-          }}
-          className="flex flex-col overflow-hidden border border-border bg-background/45 transition-colors duration-300 hover:border-accent lg:h-[480px] lg:flex-row"
-        >
-          <motion.div 
-            className="relative h-64 overflow-hidden border-b border-border bg-muted lg:h-full lg:w-[48%] lg:border-b-0 lg:border-r"
-            style={{ x: shouldReduceMotion ? 0 : leftX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
-          >
-          <Image
-            src={project.imageUrl}
-            alt={`${project.title} preview`}
-            width={1200}
-            height={800}
-            className="h-full w-full object-cover transition duration-300 hover:scale-[1.02]"
-          />
-          </motion.div>
-          <motion.div 
-            className="flex flex-1 flex-col justify-center p-8 lg:w-[52%] lg:p-12"
-            style={{ x: shouldReduceMotion ? 0 : rightX, opacity: shouldReduceMotion ? 1 : entryOpacity }}
-          >
-          <div className="flex items-start justify-between gap-3">
-            <h3 className="font-heading text-3xl font-semibold tracking-[-0.03em] text-foreground sm:text-4xl">
-              {project.title}
-            </h3>
-            {project.featured ? (
-              <span className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent">
-                Featured
+    <div ref={cardRef} className="relative flex h-auto items-start justify-center lg:sticky lg:top-24 lg:h-[100svh] lg:items-center">
+      <motion.div
+        style={{ scale: reduce ? 1 : scale, top: `calc(${index * 28}px)` }}
+        data-stack
+        className="relative w-full origin-top"
+      >
+        <TiltCard tilt={4} className="gradient-border overflow-hidden rounded-[2rem] bg-surface shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]">
+          <div className="grid lg:h-[560px] lg:grid-cols-[1.15fr_1fr]">
+            {/* Image */}
+            <div className="relative h-64 overflow-hidden sm:h-80 lg:h-full">
+              <motion.div style={{ scale: reduce ? 1 : imageScale }} className="absolute inset-0">
+                <Image
+                  src={project.imageUrl}
+                  alt={`${project.title} preview`}
+                  fill
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
+                />
+              </motion.div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-background/70 via-transparent to-accent-2/20" />
+              <span className="absolute left-6 top-6 font-heading text-[7rem] font-bold leading-none tracking-[-0.06em] text-outline opacity-80 lg:text-[10rem]">
+                {num}
               </span>
-            ) : null}
-          </div>
-          <p className="mt-5 max-w-xl text-base leading-8 text-foreground/70 lg:text-lg">
-            {project.description}
-          </p>
-          <div className="mt-7 flex flex-wrap gap-x-4 gap-y-2">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="border-b border-border pb-1 text-sm font-medium text-foreground/60"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <div className="mt-10 flex flex-wrap gap-6">
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="editorial-link inline-flex items-center gap-2 text-sm font-semibold text-accent transition hover:text-accent/80"
-            >
-              Live Preview
-              <ArrowUpRight size={18} />
-            </a>
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="editorial-link inline-flex items-center gap-2 text-sm font-semibold text-foreground/70 transition hover:text-foreground"
-            >
-              GitHub
-              <ArrowUpRight size={18} />
-            </a>
             </div>
-          </motion.div>
-        </motion.article>
-      </div>
+
+            {/* Copy */}
+            <div className="relative flex flex-col justify-between p-8 sm:p-10 lg:p-12">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-foreground/45">
+                    Project {num} / {String(total).padStart(2, "0")}
+                  </span>
+                  {project.featured ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-accent">
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Featured
+                    </span>
+                  ) : null}
+                </div>
+                <h3 className="mt-8 font-heading text-4xl font-semibold leading-[1] tracking-[-0.04em] sm:text-5xl">
+                  {project.title}
+                </h3>
+                <p className="mt-6 text-base leading-relaxed text-foreground/60">{project.description}</p>
+              </div>
+
+              <div>
+                <ul className="mt-8 flex flex-wrap gap-2">
+                  {project.tags.map((tag, i) => (
+                    <motion.li
+                      key={tag}
+                      initial={{ opacity: 0, scale: 0.6 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, ease: EASE, delay: i * 0.04 }}
+                      className="rounded-full border border-foreground/10 bg-foreground/[0.04] px-3 py-1.5 text-xs text-foreground/70"
+                    >
+                      {tag}
+                    </motion.li>
+                  ))}
+                </ul>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Magnetic>
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group/btn relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background"
+                    >
+                      <span className="absolute inset-0 origin-left scale-x-0 bg-gradient-to-r from-accent to-accent-2 transition-transform duration-500 group-hover/btn:scale-x-100" />
+                      <span className="relative">Live preview</span>
+                      <ArrowUpRight size={16} className="relative transition-transform duration-500 group-hover/btn:rotate-45" />
+                    </a>
+                  </Magnetic>
+                  <Magnetic>
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`${project.title} source on GitHub`}
+                      className="inline-flex items-center gap-2 rounded-full border border-foreground/15 px-5 py-3 text-sm font-semibold transition-colors hover:border-foreground hover:bg-foreground/5"
+                    >
+                      <Code2 size={16} /> Source
+                    </a>
+                  </Magnetic>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TiltCard>
+      </motion.div>
     </div>
   );
 }
 
 export function Projects() {
   const [projectList, setProjectList] = useState<Project[]>(fallbackProjects);
-  const shouldReduceMotion = usePrefersReducedMotionSafe();
-  const sectionRef = useRef<HTMLElement>(null);
-  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
+
   useEffect(() => {
     async function loadProjects() {
       try {
         const response = await fetch("/api/projects");
         if (response.ok) {
           const data = await response.json();
-          if (Array.isArray(data)) {
-            setProjectList(data);
-          }
+          if (Array.isArray(data)) setProjectList(data);
         }
       } catch (err) {
         console.error("Failed to load dynamic projects list, using fallback", err);
@@ -127,43 +145,23 @@ export function Projects() {
     loadProjects();
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "start center"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const scale = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
-  const x = useTransform(scrollYProgress, [0, 1], [100, 0]);
-
   return (
-    <section id="projects" ref={sectionRef} className="scroll-mt-24 overflow-hidden border-b border-border/80 py-20 sm:py-28">
-      <motion.div 
-        className="mx-auto max-w-6xl"
-        style={{
-          opacity: shouldReduceMotion ? 1 : opacity,
-          scale: shouldReduceMotion ? 1 : scale,
-          x: shouldReduceMotion ? 0 : x
-        }}
-      >
-        <div className="mb-14 max-w-2xl">
-          <p className="eyebrow">Selected work</p>
-          <h2 className="mt-6 font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl">
-            Selected work across product, design, and frontend craft.
-          </h2>
-        </div>
+    <section id="projects" className="relative scroll-mt-24 py-28 sm:py-40">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading index="02" eyebrow="Selected work" title="Things I've built" accent="with obsession." />
 
-        <div className="relative flex flex-col gap-12 lg:gap-20">
+        <div ref={containerRef} className="relative mt-16 flex flex-col gap-10 lg:mt-8 lg:gap-0">
           {projectList.map((project, index) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              index={index} 
-              shouldReduceMotion={shouldReduceMotion} 
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              total={projectList.length}
+              progress={scrollYProgress}
             />
           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, Playfair_Display } from "next/font/google";
+import { Geist_Mono, Inter, Instrument_Serif, Space_Grotesk } from "next/font/google";
 import { personalInfo, siteConfig } from "@/content/site-config";
 import "./globals.css";
 
@@ -13,9 +13,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfairDisplay = Playfair_Display({
+const spaceGrotesk = Space_Grotesk({
   variable: "--font-heading",
   subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const baseUrl = "https://portfolio-new-rho-dun.vercel.app";
@@ -78,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfairDisplay.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

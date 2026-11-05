@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
+import { useSyncExternalStore } from "react";
 
 export const transitionSettings = {
   duration: 0.65,
@@ -27,8 +27,21 @@ export const staggerItem = {
   visible: { opacity: 1, y: 0 },
 };
 
+const QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribe(callback: () => void) {
+  const mql = window.matchMedia(QUERY);
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+/** Hydration-safe: always `false` on the server and during hydration, then the real value. */
 export function usePrefersReducedMotionSafe() {
-  return useReducedMotion() ?? false;
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(QUERY).matches,
+    () => false,
+  );
 }
 
 export function getMotionProps(isReducedMotion: boolean) {
