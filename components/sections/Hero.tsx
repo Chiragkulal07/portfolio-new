@@ -173,7 +173,7 @@ export function Hero() {
             {/* Floating badge */}
             <motion.div
               style={{ x: badgeX, y: badgeY }}
-              className="glass absolute -right-4 bottom-12 rounded-2xl px-4 py-3 shadow-2xl sm:-right-8"
+              className="glass absolute -bottom-8 right-6 z-10 rounded-2xl bg-background/80 px-5 py-3 shadow-2xl backdrop-blur-md"
               animate={reduce ? undefined : { rotate: [3, -3, 3], scale: [1, 1.05, 1] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
