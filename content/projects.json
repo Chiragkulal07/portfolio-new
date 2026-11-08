@@ -34,5 +34,20 @@
     "liveUrl": "https://ai-campus-nine.vercel.app/",
     "githubUrl": "https://github.com/Chiragkulal07/ai-campus.git",
     "featured": true
+  },
+  {
+    "id": "multilingual-chatbot",
+    "title": "Multilingual Chatbot",
+    "description": "An AI-powered chatbot that understands and replies in multiple languages, letting users hold natural conversations in the language of their choice.",
+    "tags": [
+      "AI",
+      "NLP",
+      "React",
+      "Vercel"
+    ],
+    "imageUrl": "/images/multilingual-chatbot.jpg",
+    "liveUrl": "https://multilingual-chatbot-livid.vercel.app/",
+    "githubUrl": "https://github.com/Chiragkulal07/multilingual-chatbot.git",
+    "featured": true
   }
 ]
